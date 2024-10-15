@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
+import { prisma } from '../../data/postgres'
+import { CreateUserDTO } from '../../domain/DTOs/users/createUser.dto'
+import { RespUserDTO } from '../../domain/DTOs/users/respUser.dto'
 
 const users = [
   {
@@ -44,24 +47,14 @@ export class UsersController {
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {
-    const { name, lastname, email, password, createdAt = null } = req.body
-    let date = createdAt
+    const createUser = CreateUserDTO.create(req.body)
 
-    if (createdAt) {
-      date = new Date(createdAt)
-    }
+    const user = await prisma.users.create({
+      data: createUser
+    })
 
-    const newUser = {
-      id: users.length + 1,
-      name,
-      lastname,
-      email,
-      password,
-      createdAt: date
-    }
-    users.push(newUser)
-
-    res.json(newUser)
+    const respUser = RespUserDTO.response(user)
+    res.json(respUser)
   }
 
   updateUser = async (req: Request, res: Response): Promise<void> => {
