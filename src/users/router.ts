@@ -21,7 +21,7 @@ export class UsersRoutes {
       UsersMiddleware.validation
     ], todoControllers.createUser)
     router.put('/:id', [
-      param(PARAMS_BODY.id, 'ID must be a number').isInt(),
+      param(PARAMS_BODY.id, 'ID must be provided and must be a number').notEmpty().withMessage('ID is required').isInt().withMessage('ID must be a valid integer'),
       body(PARAMS_BODY.name, 'Name cannot be empty').optional().notEmpty(),
       body(PARAMS_BODY.lastname, 'Lastname cannot be empty').optional().notEmpty(),
       body(PARAMS_BODY.createdAt, `${PARAMS_BODY.createdAt} cannot be empty`).optional().isDate().notEmpty(),
