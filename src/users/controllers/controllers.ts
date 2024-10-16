@@ -28,7 +28,10 @@ const users = [
 
 export class UsersController {
   getUsers = async (req: Request, res: Response): Promise<void> => {
-    res.json(users)
+    const users = await prisma.users.findMany()
+    const usersResp = users.map((user) => RespUserDTO.response(user))
+
+    res.json(usersResp)
   }
 
   getUserById = async (req: Request, res: Response): Promise<void> => {
