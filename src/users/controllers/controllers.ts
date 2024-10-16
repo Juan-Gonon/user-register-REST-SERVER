@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import { prisma } from '../../data/postgres'
 import { CreateUserDTO } from '../../domain/DTOs/users/createUser.dto'
 import { RespUserDTO } from '../../domain/DTOs/users/respUser.dto'
+import { UpdateUserDTO } from '../../domain/DTOs/users/updateUser.dto'
 
 const users = [
   {
@@ -59,20 +60,28 @@ export class UsersController {
 
   updateUser = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
+    const updateUser = UpdateUserDTO.update(req.body)
 
-    const user = users.find((user) => user.id === userId)
-    if (!(user !== undefined)) {
+    const user = await prisma.users.findFirst({
+      where: {
+        id: userId
+      }
+    })
+
+    if (!user) {
       res.status(404).json({ error: `Todo with id ${userId} not found` })
       return
     }
 
-    const { name, lastname, createdAt } = req.body
+    const resUpdate = await prisma.users.update({
+      where: {
+        id: user.id
+      },
+      data: updateUser.values
+    })
 
-    user.name = name ?? user.name
-    user.lastname = lastname ?? user.lastname
-    user.createdAt = createdAt ?? user.createdAt
-
-    res.json(user)
+    const resUserUpdated = RespUserDTO.response(resUpdate)
+    res.json(resUserUpdated)
   }
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {
