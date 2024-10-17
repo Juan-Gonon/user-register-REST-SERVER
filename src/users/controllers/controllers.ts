@@ -5,6 +5,7 @@ import { RespUserDTO } from '../../domain/DTOs/users/respUser.dto'
 import { UpdateUserDTO } from '../../domain/DTOs/users/updateUser.dto'
 import { UserRepository } from '../../domain/repository/user.repository'
 import { GetsUsers } from '../../domain/use-cases'
+import { GetByIdUser } from '../../domain/use-cases/user/getByIdUser'
 
 export class UsersController {
   constructor (private readonly repository: UserRepository) {}
@@ -17,17 +18,10 @@ export class UsersController {
 
   getUserById = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
-    try {
-      const user = await this.repository.findById(userId)
-      const userResp = RespUserDTO.response(user)
-
-      res.json(userResp)
-    } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error: (error as Error).message
-      })
-    }
+    const getByIdUser = new GetByIdUser(this.repository)
+    getByIdUser.execute(userId)
+      .then((user) => res.json(user))
+      .catch((error) => res.status(400).json({ ok: false, error: (error as Error).message }))
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {
