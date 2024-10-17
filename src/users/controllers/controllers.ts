@@ -17,20 +17,17 @@ export class UsersController {
 
   getUserById = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
+    try {
+      const user = await this.repository.findById(userId)
+      const userResp = RespUserDTO.response(user)
 
-    const user = await prisma.users.findFirst({
-      where: {
-        id: userId
-      }
-    })
-
-    if (!user) {
-      res.status(404).json({ error: `Todo with id ${userId} not found` })
-      return
+      res.json(userResp)
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error: (error as Error).message
+      })
     }
-    const userResp = RespUserDTO.response(user)
-
-    res.json(userResp)
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {

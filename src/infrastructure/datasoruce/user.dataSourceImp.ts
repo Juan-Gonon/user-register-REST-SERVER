@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { prisma } from '../../data/postgres'
 import { UserDataSource } from '../../domain/dataSource/user.datasource'
 import { CreateUserDTO } from '../../domain/DTOs/users/createUser.dto'
@@ -28,7 +29,24 @@ export class UserDataSourceImp implements UserDataSource {
   }
 
   async findById (id: number): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    try {
+      const user = await prisma.users.findFirst({
+        where: {
+          id
+        }
+      })
+
+      if (!user) {
+        throw new Error(`Todo with id ${id} not found`)
+      }
+      return UserEntity.fromObject(user)
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message || 'An unexpected error occurred')
+      } else {
+        throw new Error('An unexpected error occurred')
+      }
+    }
   }
 
   async update (dtoUpdateUser: UpdateUserDTO): Promise<UserEntity> {

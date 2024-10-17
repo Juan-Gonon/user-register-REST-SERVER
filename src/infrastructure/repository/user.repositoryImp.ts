@@ -15,7 +15,7 @@ export class UserRepositoryImp implements UserRepository {
   }
 
   async findById (id: number): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    return await this.datasource.findById(id)
   }
 
   async update (dtoUpdateUser: UpdateUserDTO): Promise<UserEntity> {
