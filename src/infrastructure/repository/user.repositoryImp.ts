@@ -7,7 +7,7 @@ import { UserRepository } from '../../domain/repository/user.repository'
 export class UserRepositoryImp implements UserRepository {
   constructor (private readonly datasource: UserDataSource) {}
   async getAll (): Promise<UserEntity[]> {
-    throw new Error('Method not implemented.')
+    return await this.datasource.getAll()
   }
 
   async create (dtoCreateUser: CreateUserDTO): Promise<UserEntity> {

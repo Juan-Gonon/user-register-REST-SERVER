@@ -6,7 +6,13 @@ import { UserEntity } from '../../domain/entities/user.entity'
 
 export class UserDataSourceImp implements UserDataSource {
   async getAll (): Promise<UserEntity[]> {
-    throw new Error('Method not implemented.')
+    try {
+      const users = await prisma.users.findMany()
+
+      return users.map((user) => UserEntity.fromObject(user))
+    } catch (error) {
+      throw new Error('Error gets user not found')
+    }
   }
 
   async create (dtoCreateUser: CreateUserDTO): Promise<UserEntity> {

@@ -9,7 +9,7 @@ import { UserRepository } from '../../domain/repository/user.repository'
 export class UsersController {
   constructor (private readonly repository: UserRepository) {}
   getUsers = async (req: Request, res: Response): Promise<void> => {
-    const users = await prisma.users.findMany()
+    const users = await this.repository.getAll()
     const usersResp = users.map((user) => RespUserDTO.response(user))
 
     res.json(usersResp)
