@@ -1,3 +1,4 @@
+import { prisma } from '../../data/postgres'
 import { UserDataSource } from '../../domain/dataSource/user.datasource'
 import { CreateUserDTO } from '../../domain/DTOs/users/createUser.dto'
 import { UpdateUserDTO } from '../../domain/DTOs/users/updateUser.dto'
@@ -9,7 +10,15 @@ export class UserDataSourceImp implements UserDataSource {
   }
 
   async create (dtoCreateUser: CreateUserDTO): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    try {
+      const user = await prisma.users.create({
+        data: dtoCreateUser
+      })
+
+      return UserEntity.fromObject(user)
+    } catch (error) {
+      throw new Error('Error created user')
+    }
   }
 
   async findById (id: number): Promise<UserEntity> {
