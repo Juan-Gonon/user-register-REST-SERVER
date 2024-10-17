@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
-import { RespUserDTO } from '../../domain/DTOs/users/respUser.dto'
 import { UserRepository } from '../../domain/repository/user.repository'
-import { GetsUsers, GetByIdUser, CreateUser, UpdateUser } from '../../domain/use-cases'
+import { GetsUsers, GetByIdUser, CreateUser, UpdateUser, DeleteUser } from '../../domain/use-cases'
 
 export class UsersController {
   constructor (private readonly repository: UserRepository) {}
@@ -40,16 +39,11 @@ export class UsersController {
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
-    try {
-      const deletedUser = await this.repository.delete(userId)
-      const user = RespUserDTO.response(deletedUser)
 
-      res.json(user)
-    } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error: (error as Error).message
-      })
-    }
+    const deleteUser = new DeleteUser(this.repository)
+
+    deleteUser.execute(userId)
+      .then((user) => res.json(user))
+      .catch((error) => res.status(400).json({ ok: false, error: (error as Error).message }))
   }
 }
