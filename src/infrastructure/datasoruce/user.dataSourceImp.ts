@@ -50,7 +50,17 @@ export class UserDataSourceImp implements UserDataSource {
   }
 
   async update (dtoUpdateUser: UpdateUserDTO): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    try {
+      const userById = await this.findById(dtoUpdateUser.id)
+      const userUpdate = await prisma.users.update({ where: { id: userById.id }, data: dtoUpdateUser.values })
+      return UserEntity.fromObject(userUpdate)
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message || 'An unexpected error occurred')
+      } else {
+        throw new Error('An unexpected error occurred')
+      }
+    }
   }
 
   async delete (id: number): Promise<UserEntity> {

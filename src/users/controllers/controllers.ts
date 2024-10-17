@@ -46,28 +46,17 @@ export class UsersController {
 
   updateUser = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
-    const updateUser = UpdateUserDTO.update(req.body)
+    try {
+      const updateUser = UpdateUserDTO.update({ ...req.body, id: userId })
+      const user = await this.repository.update(updateUser)
+      const resUserUpdated = RespUserDTO.response(user)
 
-    const user = await prisma.users.findFirst({
-      where: {
-        id: userId
-      }
-    })
-
-    if (!user) {
-      res.status(404).json({ error: `Todo with id ${userId} not found` })
-      return
+      res.json(resUserUpdated)
+    } catch (error) {
+      res.status(400).json({
+        error: (error as Error).message
+      })
     }
-
-    const resUpdate = await prisma.users.update({
-      where: {
-        id: user.id
-      },
-      data: updateUser.values
-    })
-
-    const resUserUpdated = RespUserDTO.response(resUpdate)
-    res.json(resUserUpdated)
   }
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {

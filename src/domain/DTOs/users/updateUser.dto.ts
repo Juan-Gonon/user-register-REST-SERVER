@@ -3,14 +3,16 @@
 import { RespUserBody } from '../../../types/type'
 
 export class UpdateUserDTO {
+  public readonly id: number
   public readonly name: string
   public readonly lastname: string
   public readonly createdAt?: Date | null | undefined
 
-  private constructor (name: string, lastname: string, createdAt: Date | null) {
+  private constructor (id: number, name: string, lastname: string, createdAt: Date | null) {
     this.name = name
     this.lastname = lastname
     this.createdAt = createdAt
+    this.id = id
   }
 
   get values (): { [key: string]: any } {
@@ -24,13 +26,13 @@ export class UpdateUserDTO {
   }
 
   static update (body: RespUserBody): UpdateUserDTO {
-    const { name, lastname, createdAt = null } = body
+    const { id, name, lastname, createdAt = null } = body
     let newCreatedAt: Date | null = createdAt
 
     if (createdAt !== null) {
       newCreatedAt = new Date(createdAt)
     }
 
-    return new UpdateUserDTO(name, lastname, newCreatedAt)
+    return new UpdateUserDTO(id, name, lastname, newCreatedAt)
   }
 }

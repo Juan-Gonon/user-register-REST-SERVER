@@ -19,7 +19,7 @@ export class UserRepositoryImp implements UserRepository {
   }
 
   async update (dtoUpdateUser: UpdateUserDTO): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    return await this.datasource.update(dtoUpdateUser)
   }
 
   async delete (id: number): Promise<UserEntity> {
