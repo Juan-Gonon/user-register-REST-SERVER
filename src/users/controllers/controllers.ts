@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
-import { prisma } from '../../data/postgres'
 import { CreateUserDTO } from '../../domain/DTOs/users/createUser.dto'
 import { RespUserDTO } from '../../domain/DTOs/users/respUser.dto'
 import { UpdateUserDTO } from '../../domain/DTOs/users/updateUser.dto'
@@ -61,18 +60,16 @@ export class UsersController {
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {
     const userId = +req.params.id
+    try {
+      const deletedUser = await this.repository.delete(userId)
+      const user = RespUserDTO.response(deletedUser)
 
-    const user = await prisma.users.findFirst({ where: { id: userId } })
-
-    if (!user) {
-      res.status(404).json(
-        { error: `Todo with id ${userId} not found` }
-      )
-      return
+      res.json(user)
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error: (error as Error).message
+      })
     }
-
-    const deletedUser = await prisma.users.delete({ where: { id: userId } })
-    const userDeleteResp = RespUserDTO.response(deletedUser)
-    res.json(userDeleteResp)
   }
 }

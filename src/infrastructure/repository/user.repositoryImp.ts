@@ -23,6 +23,6 @@ export class UserRepositoryImp implements UserRepository {
   }
 
   async delete (id: number): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    return await this.datasource.delete(id)
   }
 }

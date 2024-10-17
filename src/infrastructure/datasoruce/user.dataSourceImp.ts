@@ -64,6 +64,17 @@ export class UserDataSourceImp implements UserDataSource {
   }
 
   async delete (id: number): Promise<UserEntity> {
-    throw new Error('Method not implemented.')
+    try {
+      const userById = await this.findById(id)
+      const user = await prisma.users.delete({ where: { id: userById.id } })
+
+      return UserEntity.fromObject(user)
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message || 'An unexpected error occurred')
+      } else {
+        throw new Error('An unexpected error occurred')
+      }
+    }
   }
 }
